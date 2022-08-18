@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 # Reference: https://gist.github.com/talal/1b8d0c11338dc9ab79b2386309828894
+# Indirect Reference: https://zoltanaltfatter.com/2017/09/07/Install-a-specific-version-of-formula-with-homebrew/
 # Reference: https://github.com/Homebrew/homebrew-bundle/issues/1062
 
 if [ $# -eq 0 ]; then
