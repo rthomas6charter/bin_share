@@ -20,7 +20,8 @@ brew list
 which kubectl
 
 # see what version of kubernetes-cli is currently linked/installed
-kubectl version --short
+# Note: || true just ignores errors if the default server config can't connect or something like that.
+kubectl version --short || true
 
 # see what versions of kubernetes-cli _can_ be installed using brew
 # Note: when this script was written only one previous version (1.22) was available as a Formula
@@ -39,13 +40,21 @@ echo "VERSION_ARG_AS_REGEX: $VERSION_ARG_AS_REGEX"
 COMMIT_ID_FOR_VERSION=$(git --no-pager log --max-count=1 --grep="$VERSION_ARG_AS_REGEX bottle" Formula/kubernetes-cli.rb |grep ^commit | cut -d ' ' -f2)
 echo "COMMIT_ID_FOR_VERSION: $COMMIT_ID_FOR_VERSION"
 
-# Don't delete/uninstall the current version of kubernetes-cli, but unlink it so brew can re-link the target version.
-brew unlink kubernetes-cli
+# In case this was already done for a different version of the tool... unpin it first.
+brew unpin kubernetes-cli
+
+# Switching versions requires a full delete/uninstall or the brew install command
+# will skip over download/install and just say to brew link instead, which doesn't
+# have the desired result of switching to a totally different binary.
+# TODO: Find a combination of unlink, link, etc. that will avoid re-downloading.
+brew uninstall --ignore-dependencies kubernetes-cli
 
 git checkout -b kubernetes-cli-$1 $COMMIT_ID_FOR_VERSION
 
 export HOMEBREW_NO_AUTO_UPDATE=1
+
 brew install kubernetes-cli
+
 unset HOMEBREW_NO_AUTO_UPDATE
 
 # tell bash to clear its cache of executable files
@@ -57,10 +66,8 @@ brew pin kubernetes-cli
 
 brew info kubernetes-cli
 
-which kubectl
-
 # verify that the new version of kubernetes-cli is linked/installed
-kubectl version --short
+kubectl version --short || true
 
 # Restore brew's git local clone status to master branch so it functions normally for other stuff again
 git checkout master
