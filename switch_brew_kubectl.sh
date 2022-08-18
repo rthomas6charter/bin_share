@@ -1,0 +1,1 @@
+./bin/switch_brew_kubectl.sh
