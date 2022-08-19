@@ -1,4 +1,19 @@
 #!/bin/bash -e
+#-------------------------------------------------------------------------------------
+# Summary: Executes commands to...
+#   * Check/output currently installed version of kubernetes-cli
+#   * Change into the brew repo/install directory
+#   * Find the git commit-id of the specified version of kubernetes-cli
+#   * git branch/switch to the commit-id
+#   * replace the brew installed version with the specified version (and pin it)
+#   * clean up the branch, switch back to master, and remove cached files
+#   * Check/output the newly installed version of kubernetes-cli
+#
+# Usage:
+#   switch_brew_kubectl.sh [version-to-install]
+# Example:
+#   switch_brew_kubectl.sh 1.20.4_1
+#-------------------------------------------------------------------------------------
 
 # Reference: https://gist.github.com/talal/1b8d0c11338dc9ab79b2386309828894
 # Indirect Reference: https://zoltanaltfatter.com/2017/09/07/Install-a-specific-version-of-formula-with-homebrew/
