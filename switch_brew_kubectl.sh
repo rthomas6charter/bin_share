@@ -24,6 +24,9 @@ if [ $# -eq 0 ]; then
     kill -INT $$
 fi
 
+# tap Homebrew Core
+brew tap homebrew/core
+
 # show what is installed currently via brew
 brew list
 
@@ -36,8 +39,7 @@ brew list
 which kubectl
 
 # see what version of kubernetes-cli is currently linked/installed
-# Note: || true just ignores errors if the default server config can't connect or something like that.
-kubectl version --short || true
+kubectl version --short --client
 
 # see what versions of kubernetes-cli _can_ be installed using brew
 # Note: when this script was written only one previous version (1.22) was available as a Formula
@@ -69,9 +71,15 @@ git checkout -b kubernetes-cli-$1 $COMMIT_ID_FOR_VERSION
 
 export HOMEBREW_NO_AUTO_UPDATE=1
 
+# Disable using the API for installs
+export HOMEBREW_NO_INSTALL_FROM_API=1
+
 brew install kubernetes-cli
 
 unset HOMEBREW_NO_AUTO_UPDATE
+
+# Enable using the API for installs
+unset HOMEBREW_NO_INSTALL_FROM_API
 
 # tell bash to clear its cache of executable files
 # See: https://unix.stackexchange.com/questions/5609/how-do-i-clear-bashs-cache-of-paths-to-executables
@@ -83,13 +91,12 @@ brew pin kubernetes-cli
 brew info kubernetes-cli
 
 # verify that the new version of kubernetes-cli is linked/installed
-kubectl version --short || true
-
-# Restore brew's git local clone status to master branch so it functions normally for other stuff again
-git checkout master
-git branch -d kubernetes-cli-$1
+kubectl version --short --client
 
 # Clean up cached files related to installing the specific version of kubernetes-cli
 brew cleanup kubernetes-cli
 
 popd
+
+# untap Homebrew Core
+brew untap homebrew/core
